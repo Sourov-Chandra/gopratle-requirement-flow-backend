@@ -23,6 +23,14 @@ export function errorHandler(err, req, res, next) {
     timestamp: new Date().toISOString(),
   });
 
+  // Database unavailable handler
+  if (err.message && (err.message.includes("Database not connected") || err.name === "MongoServerSelectionError")) {
+    return res.status(503).json({
+      success: false,
+      message: "Database service is currently unavailable",
+    });
+  }
+
   const statusCode = err.statusCode || 500;
   const message =
     statusCode === 500
